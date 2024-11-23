@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "93470584453",
+    "project_id": "task-manager-19499",
+    "storage_bucket": "task-manager-19499.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93470584453:android:86105637e3201b9d9e43ec",
+        "android_client_info": {
+          "package_name": "com.example.taskmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "93470584453-ut0kdd4849inubsud2dt7i1fsvi0fpr9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.taskmanager",
+            "certificate_hash": "86ded3031b66dccb182fac0de464cfe595aed1af"
+          }
+        },
+        {
+          "client_id": "93470584453-en2q6967j1k6ucjq4pjvob0l8q3jg0r9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCralLvc38Xe4YqnmO8rJoo017aQkHLf8g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "93470584453-en2q6967j1k6ucjq4pjvob0l8q3jg0r9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "93470584453-2j2hs6jsfe0e24oo8f364t1m6p61gio9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.taskmanager"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:93470584453:android:9a498dddc985ced29e43ec",
+        "android_client_info": {
+          "package_name": "com.taskmanager.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "93470584453-9olalrc278gkm3n7gepegurcqut9vgee.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.taskmanager.com",
+            "certificate_hash": "86ded3031b66dccb182fac0de464cfe595aed1af"
+          }
+        },
+        {
+          "client_id": "93470584453-en2q6967j1k6ucjq4pjvob0l8q3jg0r9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCralLvc38Xe4YqnmO8rJoo017aQkHLf8g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "93470584453-en2q6967j1k6ucjq4pjvob0l8q3jg0r9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "93470584453-2j2hs6jsfe0e24oo8f364t1m6p61gio9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.taskmanager"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
