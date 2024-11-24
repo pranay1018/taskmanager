@@ -3,6 +3,6 @@ abstract class BaseFireStoreService{
 
   Future updateDataToFireStore(Map<String,dynamic> data,String collectionName,String docName);
 
-  Future getUserDataFromFireStore(Map<String,dynamic> data,String collectionName,String docName);
+  Future getCollectionData(String collectionName,String docName);
 
 }

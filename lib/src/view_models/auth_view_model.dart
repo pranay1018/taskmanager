@@ -37,9 +37,8 @@ class AuthViewModel extends StateNotifier<AuthState> {
 
       final data = {
         'uid': userCredential.user?.uid,
-        'email': email,
-        'userName': firstName,
-        'lastName' : lastName,
+        'email': userCredential.user?.email,
+        'userName': "$firstName $lastName",
         'createdAt': DateTime.now().toIso8601String(),
       };
       if (userCredential.user != null) {
@@ -57,8 +56,14 @@ class AuthViewModel extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true);
     try {
       final userCredential = await _fauth.signInWithGoogle();
+      final data = {
+        'uid': userCredential.user?.uid,
+        'email': userCredential.user?.email,
+        'userName': userCredential.user?.displayName,
+        'createdAt': DateTime.now().toIso8601String(),
+      };
       if (userCredential.user != null) {
-        print("Google sigining success");
+        await _fstore.addDataToFireStore(data, 'users', userCredential.user!.uid);
         return true;
       }
       state = state.copyWith(userCredential: userCredential, isLoading: false);

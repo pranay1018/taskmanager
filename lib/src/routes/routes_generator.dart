@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskmanager/src/view/screens/home_screen.dart';
 import 'package:taskmanager/src/view/screens/signup_screen.dart';
+import 'package:taskmanager/src/view/screens/add_todo_screen.dart';
 import '../view/screens/login_screen.dart';
 import 'app_routes.dart';
 
@@ -14,6 +15,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const SignupScreen());
       case AppRoutes.home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case AppRoutes.todo:
+        return MaterialPageRoute(builder: (_) => const AddTodoScreen());
       default:
         return _errorRoute();
     }

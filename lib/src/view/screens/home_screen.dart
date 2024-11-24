@@ -1,126 +1,119 @@
 import 'package:flutter/material.dart';
-
-
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:taskmanager/src/view/screens/add_todo_screen.dart';
+import 'package:taskmanager/src/routes/app_routes.dart';
+import 'package:taskmanager/src/utils/color_constants.dart';
+import '../../models/todo_model.dart';
 import '../../view_models/auth_view_model.dart';
-import '../../routes/app_routes.dart';
+import '../../view_models/todo_view_model.dart';
 import '../widgets/custom_app_bar.dart';
 
-// class HomeScreen extends ConsumerWidget {
-//   const HomeScreen({super.key});
-//
-//   @override
-//   Widget build(BuildContext context,WidgetRef ref) {
-//
-//     final authState = ref.watch(authProvider);
-//     final authNotifier = ref.read(authProvider.notifier);
-//
-//     return  Scaffold(
-//       appBar: CustomAppBar(
-//         isHomePage: true,
-//         onLogOut: () async {
-//           final result = await authNotifier.logout();
-//           if (result) {
-//             const SnackBar(
-//                 content: Text("Successfully logged out!"));
-//           } else {
-//             const SnackBar(
-//                 content: Text("Failed to logout Please Try again "));
-//           }
-//           Navigator.pushNamed(context, AppRoutes.login);
-//         },
-//         onLoginTap: () {
-//         },
-//         onSignupTap: () {
-//         },
-//       ),
-//       body: const Text("data"),
-//     );
-//   }
-// }
-
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  final List<String> todoNotes = ['Task 1', 'Task 2', 'Task 3'];
-  final List<String> inProgressNotes = [];
-  final List<String> doneNotes = [];
-
-
-  @override
-  Widget build(BuildContext context) {
-
-    final authState = ref.watch(authProvider);
     final authNotifier = ref.read(authProvider.notifier);
+    final userId = FirebaseAuth.instance.currentUser
+        ?.uid; // Get current user ID
+
+    if (userId == null) {
+      return const Center(child: Text('No user found'));
+    }
+
+    final todoViewModel = ref.watch(todoProvider.notifier);
 
     return Scaffold(
-        appBar: CustomAppBar(
+      key: _scaffoldKey,
+      appBar: CustomAppBar(
         isHomePage: true,
         onLogOut: () async {
           final result = await authNotifier.logout();
           if (result) {
-            const SnackBar(
-                content: Text("Successfully logged out!"));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Successfully logged out!")),
+            );
           } else {
-            const SnackBar(
-                content: Text("Failed to logout Please Try again "));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text("Failed to logout. Please try again.")),
+            );
           }
           Navigator.pushNamed(context, AppRoutes.login);
         },
-        onLoginTap: () {
-        },
-        onSignupTap: () {
+      ),
+      body: StreamBuilder<List<Todo>>(
+        stream: todoViewModel.getTodosStream(userId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No Todos Available'));
+          }
+
+          final todos = snapshot.data!;
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                _buildSection(
+                  title: 'To-Do',
+                  todos: todos.where((todo) => todo.status == 'To Do').toList(),
+                  todoViewModel: todoViewModel,
+                ),
+                const SizedBox(width: 8),
+                _buildSection(
+                  title: 'In Progress',
+                  todos: todos
+                      .where((todo) => todo.status == 'In Progress')
+                      .toList(),
+                  todoViewModel: todoViewModel,
+                ),
+                const SizedBox(width: 8),
+                _buildSection(
+                  title: 'Done',
+                  todos: todos
+                      .where((todo) => todo.status == 'Done')
+                      .toList(),
+                  todoViewModel: todoViewModel,
+                ),
+              ],
+            ),
+          );
         },
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            _buildSection(
-              title: 'To-Do',
-              notes: todoNotes,
-              onAccept: (note) {
-                setState(() {
-                  todoNotes.add(note);
-                });
-              },
-            ),
-            const SizedBox(width: 8),
-            _buildSection(
-              title: 'In Progress',
-              notes: inProgressNotes,
-              onAccept: (note) {
-                setState(() {
-                  inProgressNotes.add(note);
-                });
-              },
-            ),
-            const SizedBox(width: 8),
-            _buildSection(
-              title: 'Done',
-              notes: doneNotes,
-              onAccept: (note) {
-                setState(() {
-                  doneNotes.add(note);
-                });
-              },
-            ),
-          ],
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _scaffoldKey.currentState!.openEndDrawer();
+        },
+        child: const Icon(Icons.add),
+      ),
+      endDrawer: Drawer(
+        shape: Border.all(width: 0),
+        width: MediaQuery
+            .of(context)
+            .size
+            .width * 0.40,
+        backgroundColor: ColorConstants.background,
+        child: const AddTodoScreen(),
       ),
     );
   }
 
   Widget _buildSection({
     required String title,
-    required List<String> notes,
-    required Function(String) onAccept,
+    required List<Todo> todos,
+    required TodoViewModel todoViewModel,
   }) {
     return Expanded(
       child: Column(
@@ -132,42 +125,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           const SizedBox(height: 8),
           Expanded(
-            child: DragTarget<String>(
-              onWillAccept: (data) => true,
+            child: DragTarget<Todo>(
+              onWillAccept: (data) => true, // Allow acceptance
               onAccept: (data) {
-                // Remove the task from other columns
-                setState(() {
-                  todoNotes.remove(data);
-                  inProgressNotes.remove(data);
-                  doneNotes.remove(data);
-                  onAccept(data);
-                });
+                // Determine the new status for the Todo based on the section
+                String newStatus;
+                if (title == 'To-Do') {
+                  newStatus = 'To Do';
+                } else if (title == 'In Progress') {
+                  newStatus = 'In Progress';
+                } else if (title == 'Done') {
+                  newStatus = 'Done';
+                } else {
+                  return; // Just in case, handle unexpected sections
+                }
+
+                print(newStatus);
+                // Update the Todo's status using the view model
+                // todoViewModel.updateTodoStatus(data.copyWith(status: newStatus));
+                // Print which item is being dragged into which section
+                print('Dragged Todo: ${data.title} into $newStatus');
               },
               builder: (context, candidateData, rejectedData) {
+                // Visual feedback for when the item is being dragged over
                 return Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: candidateData.isNotEmpty
+                        ? Colors.blue.withOpacity(0.2) // Feedback when accepting
+                        : Colors.grey[200],
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.grey),
                   ),
                   child: ListView.builder(
-                    itemCount: notes.length,
+                    itemCount: todos.length,
                     itemBuilder: (context, index) {
-                      final note = notes[index];
-                      return Draggable<String>(
-                        data: note,
+                      final todo = todos[index];
+                      return Draggable<Todo>(
+                        data: todo,
                         feedback: Material(
                           color: Colors.transparent,
-                          child: NoteCard(
-                            text: note,
+                          child: Opacity(
+                            opacity: 0.7, // Adjust opacity for better visibility
+                            child: NoteCard(text: todo.title),
                           ),
                         ),
                         childWhenDragging: const Opacity(
                           opacity: 0.5,
                           child: SizedBox.shrink(),
                         ),
-                        child: NoteCard(text: note),
+                        child: NoteCard(text: todo.title),
                       );
                     },
                   ),
@@ -179,6 +186,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
     );
   }
+
 }
 
 class NoteCard extends StatelessWidget {
