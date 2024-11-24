@@ -42,4 +42,25 @@ class Todo {
       createOn: map['createOn'] ?? '',  // Provide default value for createOn
     );
   }
+
+  // Copy with method
+  Todo copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? status,
+    List<String>? tags,
+    String? userId,
+    String? createOn,
+  }) {
+    return Todo(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      status: status ?? this.status,
+      tags: tags ?? this.tags,
+      userId: userId ?? this.userId,
+      createOn: createOn ?? this.createOn,
+    );
+  }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:taskmanager/src/view/screens/home_screen.dart';
 import 'package:taskmanager/src/view/screens/signup_screen.dart';
 import 'package:taskmanager/src/view/screens/add_todo_screen.dart';
+import 'package:taskmanager/src/view/screens/view_todo_details_screen.dart';
+import '../models/todo_model.dart';
 import '../view/screens/login_screen.dart';
 import 'app_routes.dart';
 
@@ -15,8 +17,20 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const SignupScreen());
       case AppRoutes.home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
-      case AppRoutes.todo:
+      case AppRoutes.addToDo:
         return MaterialPageRoute(builder: (_) => const AddTodoScreen());
+      case AppRoutes.viewDetails:
+      // Ensure the arguments are passed correctly
+        if (args is Map<String, dynamic>) {
+          final Todo todo = args['todo'] as Todo;
+          final bool isEditing = args['isEditing'] as bool;
+
+          return MaterialPageRoute(
+            builder: (_) => ViewDetailScreen(todo: todo, isEditing: isEditing),
+          );
+        } else {
+          return _errorRoute();
+        }
       default:
         return _errorRoute();
     }

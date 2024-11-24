@@ -29,7 +29,28 @@ class AppTheme {
     color: ColorConstants.background,
     fontSize: 12,
   );
+
+  static const TextStyle subtitle = TextStyle(
+    fontSize: 14,
+    color: Colors.black87,
+  );
+
+  static const TextStyle timestamp = TextStyle(
+    fontSize: 12,
+    color: Colors.grey,
+  );
+
+  static const TextStyle chip = TextStyle(
+    fontSize: 12,
+  );
+
+  static const TextStyle button = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+  );
 }
+
 
 //
 // Typography

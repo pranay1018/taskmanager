@@ -45,17 +45,29 @@ class TodoViewModel extends StateNotifier<TodoState> {
   }
 
   // Update an existing Todo
-  Future<void> updateTodo(Todo todo) async {
+  Future<void> updateTodo(Todo todo,String userId,String id) async {
     state = state.copyWith(isLoading: true);
     try {
-      await _fireStoreService.updateDataToFireStore(
+      if (userId.isEmpty) {
+        throw Exception('User ID is empty');
+      }
+      if (id.isEmpty) {
+        print(" id : $id");
+        throw Exception( 'ID is empty');
+      }
+
+      // Update data in Firestore
+      await _fireStoreService.updateDataInFireStore(
         todo.toMap(),
-        'users/${todo.userId}/todos',
-        todo.id,
+        'users/$userId/todos',
+        id,
       );
-      // Update todo in local state
+
+      // Update the todo locally in the state
       state = state.copyWith(
-        todos: state.todos.map((existingTodo) => existingTodo.id == todo.id ? todo : existingTodo).toList(),
+        todos: state.todos.map((existingTodo) {
+          return existingTodo.id == todo.id ? todo : existingTodo;
+        }).toList(),
         isLoading: false,
       );
     } catch (e) {
@@ -63,6 +75,7 @@ class TodoViewModel extends StateNotifier<TodoState> {
       print("Error updating todo: $e");
     }
   }
+
 
   // Delete a Todo
   Future<void> deleteTodo(String userId, String todoId) async {
